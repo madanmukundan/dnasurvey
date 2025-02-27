@@ -3,11 +3,11 @@
 
 # Installation
 1. Create virtual environment (venv example given) in a local directory created for this app
-    '''python -m venv <C:\path\to\new\virtual\environment>'''
+    `python -m venv <C:\path\to\new\virtual\environment>`
 2. Install dependencies from requirements.txt
-    '''pip install -r requirements.txt'''
+    `pip install -r requirements.txt`
 3. Run DNASurvey.py
-    '''python -m dnasurvey/DNASurvey.py'''
+    `python -m dnasurvey/DNASurvey.py`
 
 # Use of DNASurvey
 1. Enter First and Last Name

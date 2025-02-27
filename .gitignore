@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+dnasurvey/__pycache__/
+
+# Virtual environments
+.venv/
+
+# Modules and Builds
+lib/
+bin/
+

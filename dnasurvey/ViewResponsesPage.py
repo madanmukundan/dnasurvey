@@ -121,7 +121,7 @@ class ViewResponsesPage(ctk.CTkFrame):
                 text=row['Question'],
                 wraplength=450,
                 justify="left",
-                font=ctk.CTkFont(size=10)
+                font=ctk.CTkFont(size=11)
             )
             question_label.grid(row=0, column=0, padx=5, pady=0, sticky="w")
 

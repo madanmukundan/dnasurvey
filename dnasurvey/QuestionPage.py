@@ -131,8 +131,8 @@ class QuestionPage(ctk.CTkFrame):
         current_response = self.controller.responses_df.loc[original_idx, 'Response']
         if current_response != '<missing>':
             self.response_var.set(current_response)
-        # else:
-        #     self.response_var.set("")
+        else:
+            self.response_var.set("<missing>")
 
         # Update button states
         self.prev_button.configure(state="normal" if current_idx > 0 else "disabled")

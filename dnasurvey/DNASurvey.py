@@ -99,12 +99,16 @@ class DNASurveyApp(TkinterDnD.Tk):
             self.total_questions = len(self.questions_df)
 
             # Initialize responses dataframe
-            self.responses_df = pd.DataFrame(
-                {
-                    'Question': self.questions_df["Questions"].tolist(),
-                    'Response': ['<missing>'] * self.total_questions
-                }
-            )
+            if self.responses_df is None:
+                self.responses_df = pd.DataFrame(
+                    {
+                        'Question': self.questions_df["Questions"].tolist(),
+                        'Response': ['<missing>'] * self.total_questions
+                    }
+                )
+                self.current_question_index = 0
+            else:
+                self.current_question_index = self.responses_df.index[self.responses_df["Response"]=='<missing>'][0]
         
             # Create original order
             self.original_order = list(range(self.total_questions))
@@ -116,14 +120,29 @@ class DNASurveyApp(TkinterDnD.Tk):
             else:
                 self.randomized_order = self.original_order.copy()
             
-            self.current_question_index = 0
-                
+            self.status_label.configure(text="Questions loaded.")
             return True
             
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load questions: {str(e)}")
             return False
      
+    def randomize_questions(self, randomize=False):
+        # Create original order
+            self.original_order = list(range(self.total_questions))
+            
+            # Create randomized order if requested
+            if randomize:
+                self.randomized_order = list(range(self.total_questions))
+                answered_questions = self.responses_df.index[self.responses_df["Response"]!='<missing>'].to_list()
+                self.randomized_order = self.responses_df.index[self.responses_df["Response"]=='<missing>'].to_list()
+                random.shuffle(self.randomized_order)
+                self.current_question_index = len(answered_questions)
+                self.randomized_order = [*answered_questions, *self.randomized_order]
+            else:
+                self.randomized_order = self.original_order.copy()
+                self.current_question_index = 0
+
     def load_responses(self, file_path):
         self.status_label.configure(text="Loading responses...")
 
@@ -131,18 +150,17 @@ class DNASurveyApp(TkinterDnD.Tk):
             self.response_path = file_path
             loaded_responses = pd.read_excel(file_path)
             
-            # Extract first and last name if available
-            if 'First Name' in loaded_responses.columns and 'Last Name' in loaded_responses.columns:
-                self.first_name = loaded_responses['First Name'].iloc[0]
-                self.last_name = loaded_responses['Last Name'].iloc[0]
-                self.email = loaded_responses['Email'].iloc[0]
-                self.phone = loaded_responses['Phone Number'].iloc[0]
-                self.patient = loaded_responses['Patient Number'].iloc[0]
-                loaded_responses = loaded_responses.drop(['First Name', 'Last Name','Email','Phone Number','Patient Number'], axis=1)
+            self.first_name = loaded_responses['First Name'].iloc[0]
+            self.last_name = loaded_responses['Last Name'].iloc[0]
+            self.email = loaded_responses['Email'].iloc[0]
+            self.phone = loaded_responses['Phone Number'].iloc[0]
+            self.patient = loaded_responses['Patient Number'].iloc[0]
+            loaded_responses = loaded_responses.drop(['First Name', 'Last Name','Email','Phone Number','Patient Number'], axis=1)
             
             # Update the responses DataFrame
             self.responses_df = loaded_responses
             
+            self.status_label.configure(text="Responses loaded.")
             return True
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load responses: {str(e)}")
@@ -178,9 +196,21 @@ class DNASurveyApp(TkinterDnD.Tk):
             return False
     
     def reset(self):
+        self.questions_path = None
         self.questions_df = None
         self.responses_df = None
+        self.current_question_index = 0
+        self.total_questions = 0
+        self.randomized_order = []
+        self.original_order = []
+        self.first_name = ""
+        self.last_name = ""
+        self.email = ""
+        self.phone = ""
+        self.patient = ""
         self.response_path = None
+        self.status_label.configure(text="Ready")
+        self.show_frame("StartPage")
 
     def next_question(self, response=None):
         # Save the current response if provided

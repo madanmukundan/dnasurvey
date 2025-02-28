@@ -86,7 +86,7 @@ class ViewResponsesPage(ctk.CTkFrame):
             return
 
         # Drop missing
-        self.controller.responses_df = self.controller.responses_df[~self.controller.responses_df["Response"].str.contains("missing")]
+        responses_df = self.controller.responses_df[~self.controller.responses_df["Responses"].str.contains("missing")]
 
         # Create headers
         headers_frame = ctk.CTkFrame(self.scrollable_frame)
@@ -109,7 +109,7 @@ class ViewResponsesPage(ctk.CTkFrame):
         response_header.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
         # Display each question and response
-        for i, (_, row) in enumerate(self.controller.responses_df.iterrows()):
+        for i, (_, row) in enumerate(responses_df.iterrows()):
             row_frame = ctk.CTkFrame(self.scrollable_frame)
             row_frame.grid(row=i+1, column=0, padx=5, pady=0, sticky="ew")
             row_frame.grid_columnconfigure(0, weight=3)
@@ -118,15 +118,15 @@ class ViewResponsesPage(ctk.CTkFrame):
             # Question text
             question_label = ctk.CTkLabel(
                 row_frame,
-                text=row['Question'],
+                text=row['Questions'],
                 wraplength=450,
                 justify="left",
-                font=ctk.CTkFont(size=11)
+                font=ctk.CTkFont(size=12)
             )
             question_label.grid(row=0, column=0, padx=5, pady=0, sticky="w")
 
             # Convert response to descriptive text
-            response_text = row['Response']
+            response_text = row['Responses']
             if response_text == '1':
                 response_text = "1 - Strongly Agree with Left"
             elif response_text == '2':

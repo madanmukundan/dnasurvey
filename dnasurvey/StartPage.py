@@ -155,15 +155,17 @@ class StartPage(ctk.CTkFrame):
                                 hover_color="#0b7dda")
             self.exit_button.configure(text="Reset",
                                        command=self.reset)
-            success = self.controller.load_responses(file_path)
-            if success:
+            success_responses = self.controller.load_responses(file_path)
+            success_questions = self.controller.load_questions(file_path, self.randomize_var.get())
+            if success_responses and success_questions:
                 self.populate_fields()
-            else:
-                messagebox.showerror("Error", "Please drag an Excel file (.xlsx)")
-                self.reset()
-                self.controller.reset()
-                self.reset_fields()
                 return
+        # Error reached by default at eof
+        messagebox.showerror("Error", "Responses file could not be loaded")
+        self.reset()
+        self.controller.reset()
+        self.reset_fields()
+        return
 
     def reset(self):
         self.start_button.configure(text="Start Survey",
@@ -197,15 +199,17 @@ class StartPage(ctk.CTkFrame):
                                 hover_color="#0b7dda")
             self.exit_button.configure(text="Reset",
                                        command=self.reset)
-            success = self.controller.load_responses(file_path)
-        if success:
-            self.populate_fields()
-        else:
-            messagebox.showerror("Error", "Responses file could not be loaded")
-            self.reset()
-            self.controller.reset()
-            self.reset_fields()
-            return
+            success_responses = self.controller.load_responses(file_path)
+            success_questions = self.controller.load_questions(file_path, self.randomize_var.get())
+            if success_responses and success_questions:
+                self.populate_fields()
+                return
+        # Error reached by default at eof
+        messagebox.showerror("Error", "Responses file could not be loaded")
+        self.reset()
+        self.controller.reset()
+        self.reset_fields()
+        return
 
     def populate_fields(self):
         self.first_name_var.set(self.controller.first_name)
@@ -218,6 +222,7 @@ class StartPage(ctk.CTkFrame):
 
         # Continue survey if responses and load questions and answers from response sheet
         if self.controller.responses_df is not None and self.controller.questions_df is not None:
+            self.controller.randomize_questions(self.randomize_var.get())
             self.controller.show_frame("QuestionPage")
             return
         

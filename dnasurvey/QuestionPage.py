@@ -128,7 +128,7 @@ class QuestionPage(ctk.CTkFrame):
         self.question_label.configure(text=question_text)
 
         # Update response button selection
-        current_response = self.controller.responses_df.loc[original_idx, 'Response']
+        current_response = self.controller.responses_df.loc[original_idx, 'Responses']
         if current_response != '<missing>':
             self.response_var.set(current_response)
         else:
@@ -147,7 +147,7 @@ class QuestionPage(ctk.CTkFrame):
         # Save current response before going back
         if response:
             original_index = self.controller.randomized_order[self.controller.current_question_index]
-            self.controller.responses_df.loc[original_index, 'Response'] = response
+            self.controller.responses_df.loc[original_index, 'Responses'] = response
 
         self.controller.prev_question()
 
@@ -157,7 +157,7 @@ class QuestionPage(ctk.CTkFrame):
         # Save current response before saving progress
         if response:
             original_index = self.controller.randomized_order[self.controller.current_question_index]
-            self.controller.responses_df.loc[original_index, 'Response'] = response
+            self.controller.responses_df.loc[original_index, 'Responses'] = response
 
         success = self.controller.save_responses()
         if success:

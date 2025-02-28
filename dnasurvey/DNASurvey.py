@@ -102,13 +102,12 @@ class DNASurveyApp(TkinterDnD.Tk):
             if self.responses_df is None:
                 self.responses_df = pd.DataFrame(
                     {
-                        'Question': self.questions_df["Questions"].tolist(),
-                        'Response': ['<missing>'] * self.total_questions
+                        'Questions': self.questions_df["Questions"].tolist(),
+                        'Responses': ['<missing>'] * self.total_questions
                     }
                 )
-                self.current_question_index = 0
-            else:
-                self.current_question_index = self.responses_df.index[self.responses_df["Response"]=='<missing>'][0]
+
+            self.current_question_index = 0
         
             # Create original order
             self.original_order = list(range(self.total_questions))
@@ -134,14 +133,14 @@ class DNASurveyApp(TkinterDnD.Tk):
             # Create randomized order if requested
             if randomize:
                 self.randomized_order = list(range(self.total_questions))
-                answered_questions = self.responses_df.index[self.responses_df["Response"]!='<missing>'].to_list()
-                self.randomized_order = self.responses_df.index[self.responses_df["Response"]=='<missing>'].to_list()
+                answered_questions = self.responses_df.index[self.responses_df["Responses"]!='<missing>'].to_list()
+                self.randomized_order = self.responses_df.index[self.responses_df["Responses"]=='<missing>'].to_list()
                 random.shuffle(self.randomized_order)
                 self.current_question_index = len(answered_questions)
                 self.randomized_order = [*answered_questions, *self.randomized_order]
             else:
                 self.randomized_order = self.original_order.copy()
-                self.current_question_index = 0
+                self.current_question_index = self.responses_df.index[self.responses_df["Responses"]=='<missing>'][0].astype(int)
 
     def load_responses(self, file_path):
         self.status_label.configure(text="Loading responses...")
@@ -217,7 +216,7 @@ class DNASurveyApp(TkinterDnD.Tk):
         if response is not None:
             # Map to original index
             original_index = self.randomized_order[self.current_question_index]
-            self.responses_df.loc[original_index, 'Response'] = response
+            self.responses_df.loc[original_index, 'Responses'] = response
         
         # Move to the next question
         self.current_question_index += 1

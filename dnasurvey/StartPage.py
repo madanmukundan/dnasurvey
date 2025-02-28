@@ -122,14 +122,14 @@ class StartPage(ctk.CTkFrame):
         view_button.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
         # Exit button
-        exit_button = ctk.CTkButton(
+        self.exit_button = ctk.CTkButton(
             buttons_frame,
             text="Exit",
             command=self.controller.quit,
             fg_color="#f44336",
             hover_color="#d32f2f"
         )
-        exit_button.grid(row=0, column=2, padx=10, pady=10, sticky="ew")
+        self.exit_button.grid(row=0, column=2, padx=10, pady=10, sticky="ew")
 
     def drop_questions_file(self, event):
         file_path = event.data
@@ -153,8 +153,26 @@ class StartPage(ctk.CTkFrame):
             self.start_button.configure(text="Continue Survey",
                                 fg_color="#2196F3",
                                 hover_color="#0b7dda")
+            self.exit_button.configure(text="Reset",
+                                       command=self.reset)
         else:
             messagebox.showerror("Error", "Please drag an Excel file (.xlsx)")
+
+    def reset(self):
+        self.start_button.configure(text="Start Survey",
+                                    fg_color="#4CAF50",
+                                    hover_color="#45a049")
+        self.first_name_var.set("")
+        self.last_name_var.set("")
+        self.email_var.set("")
+        self.phone_number_var.set("")
+        self.patient_number_var.set("")
+        self.questions_path_var.set(os.path.join(os.path.abspath("."), "Questions", "Questions.xlsx"))
+        self.responses_path_var.set("")
+        self.randomize_var.set(False)
+        self.exit_button.configure(text="Exit",
+                                   command=self.controller.quit)
+        self.controller.reset()
 
     def browse_questions(self):
         from tkinter import filedialog
@@ -170,6 +188,8 @@ class StartPage(ctk.CTkFrame):
             self.start_button.configure(text="Continue Survey",
                                 fg_color="#2196F3",
                                 hover_color="#0b7dda")
+            self.exit_button.configure(text="Reset",
+                                       command=self.reset)
 
     def start_survey(self):
 

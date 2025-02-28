@@ -177,6 +177,11 @@ class DNASurveyApp(TkinterDnD.Tk):
             messagebox.showerror("Error", f"Failed to save responses: {str(e)}")
             return False
     
+    def reset(self):
+        self.questions_df = None
+        self.responses_df = None
+        self.response_path = None
+
     def next_question(self, response=None):
         # Save the current response if provided
         if response is not None:

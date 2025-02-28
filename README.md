@@ -15,7 +15,7 @@
 4. Install dependencies from requirements.txt
     - `pip install -r requirements.txt`
 5. Run DNASurvey.py
-    - `python -m dnasurvey/DNASurvey.py`
+    - `python dnasurvey/DNASurvey.py`
 
 ## Use of DNASurvey
 1. Enter First and Last Name
@@ -34,5 +34,5 @@
 
 ## Linux notes for customtkinter
 - On linux, python needs to use an xft-enabled version of tkinter, which cannot be installed via pip. Within directory:
-      - `conda install -c conda-forge tk=*=xft_*`
+    - `conda install -c conda-forge tk=*=xft_*`
 

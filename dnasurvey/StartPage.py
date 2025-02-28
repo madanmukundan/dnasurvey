@@ -22,18 +22,39 @@ class StartPage(ctk.CTkFrame):
         # Input fields container
         input_frame = ctk.CTkFrame(self)
         input_frame.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
-        input_frame.grid_columnconfigure(1, weight=1)
+        # input_frame.grid_columnconfigure(0, weight=1)
+        # input_frame.grid_columnconfigure(1, weight=2)
+        # input_frame.grid_columnconfigure(2, weight=0)
+        # input_frame.grid_columnconfigure(3, weight=1)
+        # input_frame.grid_columnconfigure(4, weight=0)
+        # input_frame.grid_columnconfigure(5, weight=1)
 
         # Name fields
         ctk.CTkLabel(input_frame, text="First Name:").grid(row=0, column=0, padx=10, pady=5, sticky="w")
         self.first_name_var = tk.StringVar()
-        self.first_name_entry = ctk.CTkEntry(input_frame, textvariable=self.first_name_var)
-        self.first_name_entry.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
+        self.first_name_entry = ctk.CTkEntry(input_frame, textvariable=self.first_name_var, width=320)
+        self.first_name_entry.grid(row=0, column=1, padx=(10,7), pady=5, sticky="w", columnspan=2)
 
-        ctk.CTkLabel(input_frame, text="Last Name:").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        ctk.CTkLabel(input_frame, text="Last Name:", justify="right").grid(row=0, column=3, padx=(15,0), pady=5, sticky="")
         self.last_name_var = tk.StringVar()
-        self.last_name_entry = ctk.CTkEntry(input_frame, textvariable=self.last_name_var)
-        self.last_name_entry.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
+        self.last_name_entry = ctk.CTkEntry(input_frame, textvariable=self.last_name_var, width=320)
+        self.last_name_entry.grid(row=0, column=4, padx=(0,5), pady=5, sticky="ew", columnspan=2)
+
+        # Phone number, patient number, email
+        ctk.CTkLabel(input_frame, text="email:", justify="center").grid(row=1, column=0, padx=(20,0), pady=5, sticky="")
+        self.email_var = tk.StringVar()
+        self.email_entry = ctk.CTkEntry(input_frame, textvariable=self.email_var, width=220)
+        self.email_entry.grid(row=1, column=1, padx=(10,0), pady=5, sticky="w")
+
+        ctk.CTkLabel(input_frame, text="Patient #:").grid(row=1, column=2, padx=10, pady=5, sticky="w")
+        self.patient_number_var = tk.StringVar()
+        self.patient_number_entry = ctk.CTkEntry(input_frame, textvariable=self.patient_number_var, width=220)
+        self.patient_number_entry.grid(row=1, column=3, padx=(0,9), pady=5, sticky="w")
+
+        ctk.CTkLabel(input_frame, text="Phone #:", justify="center").grid(row=1, column=4, padx=(10,0), pady=5, sticky="")
+        self.phone_number_var = tk.StringVar()
+        self.phone_number_entry = ctk.CTkEntry(input_frame, textvariable=self.phone_number_var)
+        self.phone_number_entry.grid(row=1, column=5, padx=(0,5), pady=5, sticky="ew")
 
         # Questions source
         questions_frame = ctk.CTkFrame(self)
@@ -81,14 +102,14 @@ class StartPage(ctk.CTkFrame):
         buttons_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         # Start survey button
-        start_button = ctk.CTkButton(
+        self.start_button = ctk.CTkButton(
             buttons_frame,
             text="Start Survey",
             command=self.start_survey,
             fg_color="#4CAF50",
             hover_color="#45a049"
         )
-        start_button.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.start_button.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
         # Load and view responses button
         view_button = ctk.CTkButton(
@@ -129,6 +150,9 @@ class StartPage(ctk.CTkFrame):
 
         if file_path.lower().endswith('.xlsx'):
             self.responses_path_var.set(file_path)
+            self.start_button.configure(text="Continue Survey",
+                                fg_color="#2196F3",
+                                hover_color="#0b7dda")
         else:
             messagebox.showerror("Error", "Please drag an Excel file (.xlsx)")
 
@@ -143,8 +167,19 @@ class StartPage(ctk.CTkFrame):
         file_path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
         if file_path:
             self.responses_path_var.set(file_path)
+            self.start_button.configure(text="Continue Survey",
+                                fg_color="#2196F3",
+                                hover_color="#0b7dda")
 
     def start_survey(self):
+
+        # Continue survey if responses and load questions and answers from response sheet
+        responses_path = self.responses_path_var.get()
+        if responses_path and self.controller.load_responses(responses_path) \
+            and self.controller.load_questions(self.questions_path_var.get(), self.randomize_var.get()):
+            self.controller.show_frame("QuestionPage")
+            return
+        
         # Validate first and last name
         first_name = self.first_name_var.get().strip()
         last_name = self.last_name_var.get().strip()
@@ -152,10 +187,34 @@ class StartPage(ctk.CTkFrame):
         if not first_name or not last_name:
             messagebox.showerror("Error", "Please enter your first and last name")
             return
+        
+        email = self.email_var.get().strip()
+        phone = self.phone_number_var.get().strip()
+        patient = self.patient_number_var.get().strip()
+
+        if not email or not phone or not patient:
+            messagebox.showerror("Error", "Please enter patient information.")
+            return
+        
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            messagebox.showerror("Error", "Please enter a valid email address")
+            return
+        
+        if not re.match(r'^\(?[2-9][0-9]{2}\)?[-. ]?[0-9]{3}[-. ]?[0-9]{4}$', phone) and \
+            not re.match(r'^\+[1-9][0-9]{1,14}(?:[-. ]?[0-9]+)*$', phone):
+            messagebox.showerror("Error", "Please enter a valid phone number (US format or +INTL format)")
+            return  
+        
+        if not re.match(r"\w+", patient):
+            messagebox.showerror("Error", "Please enter a valid patient number")
+            return
 
         # Save first and last name to controller
         self.controller.first_name = first_name
         self.controller.last_name = last_name
+        self.controller.email = email
+        self.controller.phone = phone
+        self.controller.patient = patient
 
         # Load questions
         questions_path = self.questions_path_var.get()

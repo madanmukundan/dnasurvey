@@ -86,7 +86,7 @@ class ViewResponsesPage(ctk.CTkFrame):
             return
 
         # Drop missing
-        self.controller.responses_df = self.controller.responses_df[~self.controller.responses_df.iloc[:,1].str.contains("missing")]
+        self.controller.responses_df = self.controller.responses_df[~self.controller.responses_df["Response"].str.contains("missing")]
 
         # Create headers
         headers_frame = ctk.CTkFrame(self.scrollable_frame)

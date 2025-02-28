@@ -115,10 +115,10 @@ class QuestionPage(ctk.CTkFrame):
         current_idx = self.controller.current_question_index
         total = self.controller.total_questions
 
-        self.controller.status_label.configure(text=f"Question #{current_idx + 1}")
-
         # Map to original index using randomized order
         original_idx = self.controller.randomized_order[current_idx]
+
+        self.controller.status_label.configure(text=f"Question ID #{original_idx + 1}")
 
         # Update progress label
         self.progress_label.configure(text=f"Question {current_idx + 1} of {total}")
@@ -131,8 +131,8 @@ class QuestionPage(ctk.CTkFrame):
         current_response = self.controller.responses_df.loc[original_idx, 'Response']
         if current_response != '<missing>':
             self.response_var.set(current_response)
-        else:
-            self.response_var.set("")
+        # else:
+        #     self.response_var.set("")
 
         # Update button states
         self.prev_button.configure(state="normal" if current_idx > 0 else "disabled")

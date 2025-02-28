@@ -15,7 +15,7 @@ class DNASurveyApp(TkinterDnD.Tk):
         
         # Set up the main window
         self.title("Survey Application")
-        self.geometry("900x460")
+        self.geometry("1010x460")
         self.minsize(600, 400)
         
         # Set the theme
@@ -32,6 +32,9 @@ class DNASurveyApp(TkinterDnD.Tk):
         self.original_order = []
         self.first_name = ""
         self.last_name = ""
+        self.email = ""
+        self.phone = ""
+        self.patient = ""
         self.response_path = None
         
         # Create Responses directory if it doesn't exist
@@ -62,9 +65,9 @@ class DNASurveyApp(TkinterDnD.Tk):
         # self.status_label.pack(side="left", padx=10)
         self.status_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
         
-        version_label = ctk.CTkLabel(status_frame, text="v1.0", anchor="e")
+        version_label = ctk.CTkLabel(status_frame, text="v1.01", anchor="e")
         # version_label.pack(side="right", padx=10)
-        version_label.grid(row=1, column=1, padx=10, pady=5, sticky="e")
+        version_label.grid(row=1, column=1, padx=15, pady=5, sticky="e")
         
         # Show the start page
         self.show_frame("StartPage")
@@ -86,10 +89,10 @@ class DNASurveyApp(TkinterDnD.Tk):
 
     
     def load_questions(self, file_path, randomize=False):
-        try:
-            self.status_label.configure(text="Loading questions...")
- 
-            df = pd.read_excel(file_path, usecols="B").dropna()
+        self.status_label.configure(text="Loading questions...")
+
+        try: 
+            df = pd.read_excel(file_path, usecols=["Questions"]).dropna()
             
             self.questions_df = df
             self.questions_path = file_path
@@ -98,7 +101,7 @@ class DNASurveyApp(TkinterDnD.Tk):
             # Initialize responses dataframe
             self.responses_df = pd.DataFrame(
                 {
-                    'Question': self.questions_df.iloc[:,0].tolist(),
+                    'Question': self.questions_df["Questions"].tolist(),
                     'Response': ['<missing>'] * self.total_questions
                 }
             )
@@ -120,8 +123,10 @@ class DNASurveyApp(TkinterDnD.Tk):
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load questions: {str(e)}")
             return False
-    
+     
     def load_responses(self, file_path):
+        self.status_label.configure(text="Loading responses...")
+
         try:
             self.response_path = file_path
             loaded_responses = pd.read_excel(file_path)
@@ -130,7 +135,10 @@ class DNASurveyApp(TkinterDnD.Tk):
             if 'First Name' in loaded_responses.columns and 'Last Name' in loaded_responses.columns:
                 self.first_name = loaded_responses['First Name'].iloc[0]
                 self.last_name = loaded_responses['Last Name'].iloc[0]
-                loaded_responses = loaded_responses.drop(['First Name', 'Last Name'], axis=1)
+                self.email = loaded_responses['Email'].iloc[0]
+                self.phone = loaded_responses['Phone Number'].iloc[0]
+                self.patient = loaded_responses['Patient Number'].iloc[0]
+                loaded_responses = loaded_responses.drop(['First Name', 'Last Name','Email','Phone Number','Patient Number'], axis=1)
             
             # Update the responses DataFrame
             self.responses_df = loaded_responses
@@ -152,9 +160,12 @@ class DNASurveyApp(TkinterDnD.Tk):
             # Add first and last name to the DataFrame
             save_df.insert(0, 'Last Name', self.last_name)
             save_df.insert(0, 'First Name', self.first_name)
+            save_df.insert(0, 'Patient Number', self.patient)
+            save_df.insert(0, 'Phone Number', self.phone)
+            save_df.insert(0, 'Email', self.email)
             
             # Determine file path
-            file_name = f"{self.first_name}_{self.last_name}_responses.xlsx"
+            file_name = f"{self.first_name}_{self.last_name}_{self.patient}_responses.xlsx"
             file_path = os.path.join("Responses", file_name)
             
             # Save to file

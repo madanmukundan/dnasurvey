@@ -270,6 +270,8 @@ class StartPage(ctk.CTkFrame):
 
         # Load questions with randomization option
         success = self.controller.load_questions(questions_path, self.randomize_var.get())
+        self.exit_button.configure(text="Reset",
+                                       command=self.reset)
         if success:
             self.controller.show_frame("QuestionPage")
 

@@ -1,7 +1,13 @@
 # DNA Survey
 ### Guide user through questionnaire of predefined questions and compiles answers into a responses excel sheet.
 
-## Installation
+## Release Installation (Windows)
+1. Download latest release for Windows -> [v1.01](https://github.com/madanmukundan/dnasurvey/releases/tag/v1.01) and unzip.
+
+2. Run by double-clicking from DNASurvey\DNASurvey.exe
+    - Please do not move DNASurvey.exe from its parent folder (lib requirements for gui)
+
+## Python installation
 1. Create virtual environment (venv example given) in a local directory created for this app.
     - `python -m venv <C:\path\to\new\virtual\environment>`
     - `python3 -m venv </path/to/new/virtual/environment>`

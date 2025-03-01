@@ -9,4 +9,7 @@ dnasurvey/__pycache__/
 # Modules and Builds
 lib/
 bin/
-
+build/
+dist/
+*.spec
+pyinstaller*

@@ -36,7 +36,7 @@
 
 ## Viewing Responses
 - Responses are saved under the Responses/ folder and can be viewed directly or loaded into DNASurvey for viewing answered questions.
-- For dev, all questions have a response field initialized. Missing responses have this field labeled "<missing>"
+- For dev, all questions have a response field initialized. Missing responses have this field labeled "\<missing\>"
 
 ## Linux notes for customtkinter
 - On linux, python needs to use an xft-enabled version of tkinter, which cannot be installed via pip. Within directory:
